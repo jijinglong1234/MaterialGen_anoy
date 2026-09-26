@@ -1,0 +1,35 @@
+# Underdamped Langevin Dynamics Experiment Config
+# Type C: Second-order Langevin with momentum for barrier crossing
+
+experiment:
+  name: "underdamped_mp20"
+  description: "Underdamped Langevin with BAOAB splitting, decaying friction"
+  output_dir: "results/underdamped_mp20/"
+
+sampler:
+  type: "underdamped"
+  num_samples: 500
+  beta: 38.68
+  splitting: "BAOAB"           # BAOAB | ABOBA | VV | GJF
+  dt: 0.001                    # integration time step
+  num_steps: 50000             # total dynamics steps
+
+  # Friction schedule
+  friction:
+    min: 0.1                   # underdamped regime
+    max: 10.0                  # near-overdamped regime
+    schedule: "decaying"       # decaying | constant | two_phase
+    decay_style: "geometric"   # geometric | linear
+
+  # Temperature schedule
+  temperature_schedule:
+    beta_min: 10.0             # high T (exploration)
+    beta_max: 500.0            # low T (convergence)
+    schedule: "linear"         # linear | geometric | constant
+
+  mass: 1.0                    # effective mass
+
+# Variants to test:
+# under_const_friction: {friction: {min: 1.0, max: 1.0, schedule: constant}}
+# under_two_phase:      {friction: {schedule: two_phase}}
+# under_high_inertia:   {friction: {min: 0.01, max: 1.0}}

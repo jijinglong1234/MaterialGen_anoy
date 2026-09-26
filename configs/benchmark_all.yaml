@@ -1,0 +1,58 @@
+# Benchmark All — Master experiment grid
+# Runs all 6 schedulers × 3 datasets × 3 NNPs for comprehensive evaluation
+
+experiment:
+  name: "benchmark_all"
+  description: "Full benchmark: 6 schedulers × 3 datasets × 3 NNPs"
+  output_dir: "results/benchmark_all/"
+  seed: 42
+  parallel: true               # run independent configs in parallel
+  max_workers: 4
+
+# Grid search definition
+grid:
+  scheduler: ["ald", "pf_ode", "underdamped", "cyclical", "fp_optimal", "u_adaptive"]
+  dataset: ["mp20", "carbon24", "perov5"]
+  nnp: ["mace", "chgnet", "m3gnet"]
+
+# Fixed parameters across all runs
+fixed:
+  num_samples: 500
+  beta: 38.68
+  sigma_min: 0.01
+
+# Scheduler-specific overrides
+overrides:
+  ald:
+    sigma_max: 1.0
+    num_steps: 200
+  pf_ode:
+    sigma_max: 1.0
+    solver: "dopri5"
+  underdamped:
+    num_steps: 50000
+    dt: 0.001
+    friction: {min: 0.1, max: 10.0, schedule: "decaying"}
+  cyclical:
+    sigma_max: 0.8
+    num_cycles: 5
+    steps_per_cycle: 100
+  fp_optimal:
+    schedule_type: "exponential"
+    num_steps: 200
+  u_adaptive:
+    sigma_max: 1.0
+    num_steps: 500
+    adaptive_rule: "threshold"
+
+# Analysis to run after generation
+analysis:
+  score_comparison: true
+  curl_analysis: true
+  lambda_experiment: true
+  lambda_values: [0.0, 0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1.0]
+
+# Baseline comparison
+baseline:
+  enabled: true
+  models: ["diffcsp", "cdvae"]

@@ -1,0 +1,29 @@
+# PF-ODE (Probability Flow ODE) Experiment Config
+# Type B: Deterministic sampling via ODE integration
+
+experiment:
+  name: "pf_ode_mp20"
+  description: "Probability Flow ODE with DOPRI5 adaptive solver"
+  output_dir: "results/pf_ode_mp20/"
+
+sampler:
+  type: "pf_ode"
+  sigma_max: 1.0
+  sigma_min: 0.01
+  num_samples: 500
+  beta: 38.68
+  solver: "dopri5"
+  rtol: 1.0e-5
+  atol: 1.0e-7
+  dt_init: 0.01
+  dt_min: 1.0e-6
+  dt_max: 0.1
+  prior: "gaussian"
+  # For diversity: sample different initial conditions
+  prior_seeds: 500
+
+# Variants to test:
+# pf_euler:    {solver: euler, num_steps: 500}
+# pf_rk4:      {solver: rk4, num_steps: 200}
+# pf_dopri5:   {solver: dopri5} (default)
+# pf_phys_prior: {prior: physically_informed}

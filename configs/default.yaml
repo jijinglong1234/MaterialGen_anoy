@@ -1,0 +1,54 @@
+# MaterialGen Default Configuration
+# This file specifies all default parameters. Individual experiment configs
+# override specific sections.
+
+experiment:
+  name: "default"
+  seed: 42
+  output_dir: "results/"
+
+data:
+  dataset: "mp20"              # mp20 | carbon24 | perov5 | custom
+  data_path: null              # only for custom dataset
+  num_test_structures: 100
+
+nnp:
+  backend: "mace"              # mace | chgnet | m3gnet | ensemble
+  model_path: "MACE-MP-0.model"
+  device: "cuda"
+  dtype: "float64"
+  ensemble_backends: null      # for ensemble: ["mace", "chgnet", "m3gnet"]
+
+sampler:
+  type: "ald"                  # ald | pf_ode | underdamped | cyclical | fp_optimal | u_adaptive
+  sigma_max: 1.0
+  sigma_min: 0.01
+  num_steps: 200
+  num_samples: 500
+  beta: 38.68                  # 1/(kB*T) at 300K
+  prior: "gaussian"            # gaussian | physically_informed
+
+  # PF-ODE specific
+  solver: null                 # dopri5 | rk4 | euler
+  rtol: 1.0e-5
+  atol: 1.0e-7
+
+  # Underdamped specific
+  friction: null               # {min: 0.1, max: 10.0, schedule: decaying}
+
+  # Cyclical specific
+  num_cycles: null             # e.g., 5
+
+  # U-Adaptive specific
+  uncertainty: null            # {source: ensemble, u_low: 0.01, u_high: 0.1}
+
+baseline:
+  enabled: false
+  models: []                   # diffcsp | mattergen | cdvae
+  checkpoint_paths: {}
+
+analysis:
+  score_comparison: false
+  curl_analysis: false
+  lambda_experiment: false
+  lambda_values: [0.0, 0.2, 0.5, 0.8, 1.0]

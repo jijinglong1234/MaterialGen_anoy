@@ -1,0 +1,46 @@
+# Fokker-Planck Optimal Control Experiment Config
+# Type E: Theoretically optimal noise schedule via HJB equation
+
+experiment:
+  name: "fp_optimal_mp20"
+  description: "Fokker-Planck optimal control with exponential effective temperature"
+  output_dir: "results/fp_optimal_mp20/"
+
+sampler:
+  type: "fp_optimal"
+  num_samples: 500
+  beta: 38.68
+
+  # Effective temperature range
+  e_0: 1.0                     # initial effective temperature (≈ σ²_max)
+  e_T: 0.026                   # target effective temperature (= 1/β at 300K)
+
+  # Schedule type
+  schedule_type: "exponential" # exponential | power_law | numerical | score_informed
+
+  # Exponential schedule params
+  num_steps: 200
+  step_size: 0.1
+
+  # Power-law schedule params (if schedule_type: power_law)
+  power_exponent: 2.0          # p > 1 for tempered convergence
+  decay_rate: 0.1              # c in e(t) = e_0 · (1 + c·t)^(-p)
+
+  # Numerical optimization (if schedule_type: numerical)
+  numerical:
+    em_iterations: 3           # alternations of sampling + schedule optimization
+    samples_per_iteration: 200
+    density_estimator: "kde"   # kde | gmm | histogram
+
+  # Score-informed schedule (if schedule_type: score_informed)
+  score_informed:
+    force_smoothing: 10        # steps to average force magnitude
+    sensitivity: 0.5           # how responsive to force magnitude changes
+
+  prior: "gaussian"
+
+# Variants to test:
+# fp_exponential: {schedule_type: exponential}
+# fp_power_law:   {schedule_type: power_law, power_exponent: 2.0}
+# fp_numerical:   {schedule_type: numerical, numerical: {em_iterations: 5}}
+# fp_score_info:  {schedule_type: score_informed}

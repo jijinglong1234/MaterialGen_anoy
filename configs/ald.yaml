@@ -1,0 +1,27 @@
+# ALD (Annealed Langevin Dynamics) Experiment Config
+# Type A: Overdamped Langevin with monotonically decreasing noise
+
+experiment:
+  name: "ald_mp20"
+  description: "Baseline annealed Langevin dynamics with geometric noise schedule"
+  output_dir: "results/ald_mp20/"
+
+sampler:
+  type: "ald"
+  sigma_max: 1.0
+  sigma_min: 0.01
+  num_steps: 200
+  num_samples: 500
+  beta: 38.68
+  schedule: "geometric"        # geometric | linear | cosine
+  langevin_steps_per_level: 1
+  step_size: 0.2
+  prior: "gaussian"
+
+# Variants to test:
+# ald_linear:  {schedule: linear}
+# ald_cosine:  {schedule: cosine}
+# ald_sigma_0.5: {sigma_max: 0.5}
+# ald_sigma_2.0: {sigma_max: 2.0}
+# ald_beta_100:  {beta: 100}
+# ald_beta_500:  {beta: 500}

@@ -1,0 +1,33 @@
+# Cyclical / Reheating Schedule Experiment Config
+# Type D: Periodically reheating to escape local minima
+
+experiment:
+  name: "cyclical_mp20"
+  description: "Cyclical reheating with sinusoidal schedule, conservative sigma_max"
+  output_dir: "results/cyclical_mp20/"
+
+sampler:
+  type: "cyclical"
+  sigma_max: 0.8               # CONSERVATIVE: must stay in NNP reliable range
+  sigma_min: 0.01
+  num_samples: 500
+  beta: 38.68
+  cycle_shape: "sinusoidal"    # sinusoidal | sawtooth | step
+  num_cycles: 5
+  steps_per_cycle: 100
+  langevin_steps_per_level: 1
+  step_size: 0.2
+  prior: "gaussian"
+
+  # Early reheating (escape detection)
+  early_reheat:
+    enabled: true
+    stall_patience: 20         # reheat if energy stagnates for N steps
+    energy_window: 10          # look at last N steps for stagnation
+
+# Variants to test:
+# cycl_sawtooth:   {cycle_shape: sawtooth}
+# cycl_step:       {cycle_shape: step}
+# cycl_3_cycles:   {num_cycles: 3}
+# cycl_10_cycles:  {num_cycles: 10}
+# cycl_sigma_1.5:  {sigma_max: 1.5}  (aggressive — high risk of OOD failures)

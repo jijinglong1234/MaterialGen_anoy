@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Generated data and outputs (see README "Data")
+data/
+results/
+logs/
+checkpoints/
+docs/
+
+# Slurm job artifacts
+slurm.*.out
+.run_tier*.slurm
+.smoke.slurm
+.joblist*.txt
+*.sbatch
+
+# Local scratch
+/tmp/
+*.log
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,60 @@
+# Uncertainty-Adaptive Schedule Experiment Config
+# Type F: Noise schedule adapts to real-time NNP uncertainty
+
+experiment:
+  name: "u_adaptive_mp20"
+  description: "Uncertainty-adaptive schedule using ensemble NNP disagreement"
+  output_dir: "results/u_adaptive_mp20/"
+
+nnp:
+  backend: "ensemble"          # Required: needs uncertainty estimates
+  ensemble_backends: ["mace", "chgnet", "m3gnet"]
+
+sampler:
+  type: "u_adaptive"
+  sigma_max: 1.0
+  sigma_min: 0.01
+  num_samples: 500
+  num_steps: 500               # typically needs more steps than ALD
+  beta: 38.68
+
+  # Uncertainty estimation
+  uncertainty:
+    source: "ensemble"         # ensemble | descriptor | evidential | mc_dropout
+    # Ensemble source: uses disagreement between MACE/CHGNet/M3GNet
+
+  # Adaptive rule
+  adaptive_rule: "threshold"   # threshold | continuous | pi_controller | rejection
+
+  # Threshold-based (if adaptive_rule: threshold)
+  u_low: 0.02                  # eV/Å — below this, accelerate convergence
+  u_high: 0.10                 # eV/Å — above this, slow down / increase noise
+  u_critical: 0.50             # eV/Å — above this, panic (reject and backtrack)
+  delta_sigma_up: 0.05         # increase noise when uncertain
+  delta_sigma_down: 0.02       # decrease noise when confident
+
+  # Continuous (if adaptive_rule: continuous)
+  continuous:
+    tau: 0.01                  # transition sharpness
+    u_0: 0.05                  # center of sigmoid
+
+  # PI controller (if adaptive_rule: pi_controller)
+  pi_controller:
+    Kp: 0.1                    # proportional gain
+    Ki: 0.01                   # integral gain
+    u_target: 0.05             # maintain uncertainty at this level
+
+  # Rejection (if adaptive_rule: rejection)
+  rejection:
+    u_reject: 0.15             # reject steps with uncertainty above this
+    max_consecutive_reject: 10 # panic after N consecutive rejections
+
+  step_size: 0.2
+  prior: "gaussian"
+
+# Variants to test:
+# ua_descriptor:  {uncertainty: {source: descriptor}}
+# ua_continuous:  {adaptive_rule: continuous}
+# ua_pi:          {adaptive_rule: pi_controller}
+# ua_rejection:   {adaptive_rule: rejection}
+# ua_conservative: {u_high: 0.05, u_critical: 0.2}
